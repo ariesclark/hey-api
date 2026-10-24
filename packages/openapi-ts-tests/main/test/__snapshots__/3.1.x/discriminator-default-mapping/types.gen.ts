@@ -4,9 +4,9 @@ export type ClientOptions = {
   baseUrl: `${string}://${string}` | (string & {});
 };
 
-export type Pet = Cat | Dog | OtherPet;
+export type PetOneOf = Cat | Dog | OtherPet;
 
-export type PetByName = Cat | Dog | OtherPet;
+export type PetAnyOf = Cat | Dog | OtherPet;
 
 export type Cat = {
   petType: 'cat';

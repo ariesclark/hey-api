@@ -16,13 +16,13 @@ export const zOtherPet = z.object({
   petType: z.string().optional()
 });
 
-export const zPet = z.union([
+export const zPetOneOf = z.union([
   zCat,
   zDog,
   zOtherPet
 ]);
 
-export const zPetByName = z.union([
+export const zPetAnyOf = z.union([
   zCat,
   zDog,
   zOtherPet

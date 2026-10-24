@@ -16,13 +16,13 @@ export const vOtherPet = v.object({
   petType: v.optional(v.string())
 });
 
-export const vPet = v.union([
+export const vPetOneOf = v.union([
   vCat,
   vDog,
   vOtherPet
 ]);
 
-export const vPetByName = v.union([
+export const vPetAnyOf = v.union([
   vCat,
   vDog,
   vOtherPet
