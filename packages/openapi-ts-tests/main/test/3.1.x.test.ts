@@ -219,6 +219,13 @@ describe(`OpenAPI ${version}`, () => {
     },
     {
       config: createConfig({
+        input: 'discriminator-default-mapping.yaml',
+        output: 'discriminator-default-mapping',
+      }),
+      description: 'handles discriminator with defaultMapping',
+    },
+    {
+      config: createConfig({
         input: 'discriminator-mapped-many.yaml',
         output: 'discriminator-mapped-many',
       }),

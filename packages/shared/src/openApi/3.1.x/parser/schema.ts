@@ -14,7 +14,26 @@ import {
   type DiscriminatorPropertyType,
   discriminatorValues,
 } from '../../../openApi/shared/utils/discriminator';
-import { isTopLevelComponent, refToName } from '../../../utils/ref';
+import { encodeJsonPointerSegment, isTopLevelComponent, refToName } from '../../../utils/ref';
+
+/**
+ * @see https://spec.openapis.org/oas/v3.2.0.html#fixed-fields-21
+ */
+function parseDiscriminator(
+  discriminator: OpenAPIV3_1.DiscriminatorObject,
+): NonNullable<IR.SchemaObject['discriminator']> {
+  const { defaultMapping, mapping, propertyName } = discriminator;
+  return {
+    ...(defaultMapping && {
+      defaultMapping:
+        defaultMapping.startsWith('#') || defaultMapping.includes('/')
+          ? defaultMapping
+          : `#/components/schemas/${encodeJsonPointerSegment(defaultMapping)}`,
+    }),
+    ...(mapping && { mapping }),
+    propertyName,
+  };
+}
 
 export function getSchemaTypes(
   schema: OpenAPIV3_1.SchemaObject,
@@ -897,10 +916,7 @@ function parseAnyOf({
   }
 
   if (schema.discriminator && irSchema.logicalOperator === 'or') {
-    irSchema.discriminator = {
-      ...(schema.discriminator.mapping && { mapping: schema.discriminator.mapping }),
-      propertyName: schema.discriminator.propertyName,
-    };
+    irSchema.discriminator = parseDiscriminator(schema.discriminator);
   }
 
   return irSchema;
@@ -1047,10 +1063,7 @@ function parseOneOf({
   }
 
   if (schema.discriminator && irSchema.logicalOperator === 'or') {
-    irSchema.discriminator = {
-      ...(schema.discriminator.mapping && { mapping: schema.discriminator.mapping }),
-      propertyName: schema.discriminator.propertyName,
-    };
+    irSchema.discriminator = parseDiscriminator(schema.discriminator);
   }
 
   return irSchema;

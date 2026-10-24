@@ -188,6 +188,13 @@ for (const zodVersion of zodVersions) {
       },
       {
         config: createConfig({
+          input: 'discriminator-default-mapping.yaml',
+          output: 'discriminator-default-mapping',
+        }),
+        description: 'falls back to z.union() for a discriminator with defaultMapping',
+      },
+      {
+        config: createConfig({
           input: 'discriminator-one-of.yaml',
           output: 'discriminator-one-of',
         }),

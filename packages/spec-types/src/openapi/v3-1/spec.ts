@@ -427,6 +427,12 @@ export interface ContactObject extends SpecExtensions {
  */
 export interface DiscriminatorObject extends SpecExtensions {
   /**
+   * The schema name or URI reference to a schema that is expected to validate the structure of the model when the discriminating property is not present in the payload or contains a value for which there is no explicit or implicit mapping.
+   *
+   * Added in {@link https://spec.openapis.org/oas/v3.2.0.html#fixed-fields-21 OpenAPI 3.2.0}.
+   */
+  defaultMapping?: string;
+  /**
    * An object to hold mappings between payload values and schema names or references.
    */
   mapping?: Record<string, string>;

@@ -127,6 +127,9 @@ export function buildDiscriminatedUnion({
   const discriminatorKey = parentSchema.discriminator?.propertyName;
   if (!discriminatorKey) return null;
 
+  const { defaultMapping } = parentSchema.discriminator!;
+  if (defaultMapping && schemas.some((schema) => schema.$ref === defaultMapping)) return null;
+
   const members: Array<DiscriminatedUnionMember> = [];
 
   for (const schema of schemas) {

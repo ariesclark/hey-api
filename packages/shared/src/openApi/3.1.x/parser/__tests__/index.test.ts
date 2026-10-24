@@ -137,4 +137,86 @@ describe('parseV3_1_X', () => {
     parseV3_1_X(context);
     expect(context.ir.components?.requestBodies?.['body/special~name']).toBeDefined();
   });
+
+  describe('discriminator defaultMapping', () => {
+    const pets = {
+      Cat: {
+        properties: { petType: { const: 'cat' } },
+        required: ['petType'],
+        type: 'object',
+      },
+      Dog: {
+        properties: { petType: { const: 'dog' } },
+        required: ['petType'],
+        type: 'object',
+      },
+      OtherPet: {
+        properties: { petType: { not: { enum: ['cat', 'dog'] }, type: 'string' } },
+        type: 'object',
+      },
+    } satisfies Record<string, OpenAPIV3_1.SchemaObject>;
+
+    const members = [
+      { $ref: '#/components/schemas/Cat' },
+      { $ref: '#/components/schemas/Dog' },
+      { $ref: '#/components/schemas/OtherPet' },
+    ];
+
+    const mapping = {
+      cat: '#/components/schemas/Cat',
+      dog: '#/components/schemas/Dog',
+    };
+
+    it.each([
+      { composition: 'oneOf', defaultMapping: '#/components/schemas/OtherPet' },
+      { composition: 'anyOf', defaultMapping: '#/components/schemas/OtherPet' },
+      { composition: 'oneOf', defaultMapping: 'OtherPet' },
+    ])(
+      'keeps defaultMapping $defaultMapping on a $composition union',
+      ({ composition, defaultMapping }) => {
+        const spec: OpenAPIV3_1.Document = {
+          components: {
+            schemas: {
+              ...pets,
+              Pet: {
+                [composition]: members,
+                discriminator: { defaultMapping, mapping, propertyName: 'petType' },
+              },
+            },
+          },
+          info: { title: 'Test', version: '1' },
+          openapi: '3.1.0',
+        };
+        const context = createContext(spec);
+        parseV3_1_X(context);
+        expect(context.ir.components?.schemas?.Pet?.discriminator).toEqual({
+          defaultMapping: '#/components/schemas/OtherPet',
+          mapping,
+          propertyName: 'petType',
+        });
+      },
+    );
+
+    it('leaves defaultMapping out when the discriminator has none', () => {
+      const spec: OpenAPIV3_1.Document = {
+        components: {
+          schemas: {
+            ...pets,
+            Pet: {
+              discriminator: { mapping, propertyName: 'petType' },
+              oneOf: members.slice(0, 2),
+            },
+          },
+        },
+        info: { title: 'Test', version: '1' },
+        openapi: '3.1.0',
+      };
+      const context = createContext(spec);
+      parseV3_1_X(context);
+      expect(context.ir.components?.schemas?.Pet?.discriminator).toEqual({
+        mapping,
+        propertyName: 'petType',
+      });
+    });
+  });
 });

@@ -149,6 +149,7 @@ export interface IRSchemaObject
    * discriminator for polymorphism.
    */
   discriminator?: {
+    defaultMapping?: string;
     mapping?: Record<string, string>;
     propertyName: string;
   };

@@ -1,0 +1,55 @@
+openapi: 3.2.0
+info:
+  title: OpenAPI 3.2.0 discriminator default mapping example
+  version: 1
+components:
+  schemas:
+    Pet:
+      oneOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Dog'
+        - $ref: '#/components/schemas/OtherPet'
+      discriminator:
+        propertyName: petType
+        mapping:
+          cat: '#/components/schemas/Cat'
+          dog: '#/components/schemas/Dog'
+        defaultMapping: '#/components/schemas/OtherPet'
+    PetByName:
+      anyOf:
+        - $ref: '#/components/schemas/Cat'
+        - $ref: '#/components/schemas/Dog'
+        - $ref: '#/components/schemas/OtherPet'
+      discriminator:
+        propertyName: petType
+        mapping:
+          cat: '#/components/schemas/Cat'
+          dog: '#/components/schemas/Dog'
+        defaultMapping: OtherPet
+    Cat:
+      type: object
+      properties:
+        petType:
+          const: cat
+        meows:
+          type: boolean
+      required:
+        - petType
+    Dog:
+      type: object
+      properties:
+        petType:
+          const: dog
+        barks:
+          type: boolean
+      required:
+        - petType
+    OtherPet:
+      type: object
+      properties:
+        petType:
+          type: string
+          not:
+            enum:
+              - cat
+              - dog
